@@ -16,6 +16,7 @@ MAKEFILE = Makefile
 
 LIB_DIR = lib
 SRC_DIR = src
+SRC_SIZE = $(shell ls src | wc -l)
 OBJ_DIR = obj
 BIN_DIR = .
 INCLUDES_DIR = includes
@@ -109,8 +110,10 @@ $(LIBMFT):
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
 
+I = 1
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCLUDES)
-	@printf $(YELLOW)"Compiling $<\n"$(RESET)
+	@printf $(YELLOW)"[$(I)/$(SRC_SIZE)] Compiling $<\n"$(RESET)
+	$(eval I=$(shell echo $$(($(I) + 1))))
 	@gcc -c $< -o $@ $(CFLAGS) 
 
 $(NAME): $(LIBFT) $(OBJ_DIR) $(OBJ) 
