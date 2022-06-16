@@ -21,7 +21,6 @@ OBJ_DIR = obj
 BIN_DIR = .
 INCLUDES_DIR = includes
 LIBFT_DIR = $(LIB_DIR)/libft
-LIBMFT_DIR = $(LIB_DIR)/libmft
 INSTALL_DIR = install
 SED = sed
 ROOT = sudo
@@ -51,6 +50,8 @@ OBJ = $(addprefix $(OBJ_DIR)/, $(SRC_RAW:.c=.o))
 INCLUDES = $(addprefix $(INCLUDES_DIR)/, $(HEADERS))
 
 RESOURCES =
+
+NPROC = $(shell nproc)
 
 OPTI_FLAGS = -O3
 
@@ -96,16 +97,13 @@ RESET :="\e[0m"
 
 all:
 	@printf $(CYAN)"[INFO] Building libft..\n"$(RESET)
-	@make --no-print-directory -C $(LIBFT_DIR)
+	@make --no-print-directory -j$(NPROC) -C $(LIBFT_DIR)
 	@printf $(CYAN)"[INFO] Building $(NAME)..\n"$(RESET)
-	@make --no-print-directory $(BIN_DIR)/$(NAME)
+	@make --no-print-directory -j$(NPROC) $(BIN_DIR)/$(NAME)
 
 
 $(LIBFT):
-	@make --no-print-directory -C $(LIBFT_DIR)
-
-$(LIBMFT):
-	@make --no-print-directory -C $(LIBMFT_DIR)
+	@make --no-print-directory -j$(NPROC) -C $(LIBFT_DIR)
 
 $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)
@@ -114,11 +112,11 @@ I = 1
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCLUDES)
 	@printf $(YELLOW)"[$(I)/$(SRC_SIZE)] Compiling $<\n"$(RESET)
 	$(eval I=$(shell echo $$(($(I) + 1))))
-	@gcc -c $< -o $@ $(CFLAGS) 
+	gcc -c $< -o $@ $(CFLAGS) 
 
 $(NAME): $(LIBFT) $(OBJ_DIR) $(OBJ) 
 	@printf $(CYAN)"[INFO] Linking ${BIN_DIR}/${NAME}\n"$(RESET)
-	@gcc $(CFLAGS) -o $(NAME) $(OBJ) $(LDFLAGS) $(LDLIBS)
+	gcc $(CFLAGS) -o $(NAME) $(OBJ) $(LDFLAGS) $(LDLIBS)
 	@printf ${GREEN}"[INFO] Compiled $(BIN_DIR)/$(NAME) with success!\n"
 	@printf ${RESET}
 
